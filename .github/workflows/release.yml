@@ -23,16 +23,16 @@ jobs:
       - name: Build binaries for multiple architectures
         run: |
           # Build for amd64
-          GOOS=linux GOARCH=amd64 go build -o ansible-roledep-validator-amd64
+          GOOS=linux GOARCH=amd64 go build -o ansible-roledep-validator-linux-amd64
 
           # Build for arm64
-          GOOS=linux GOARCH=arm64 go build -o ansible-roledep-validator-arm64
+          GOOS=linux GOARCH=arm64 go build -o ansible-roledep-validator-linux-arm64
 
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ansible-roledep-validator-amd64
-            ansible-roledep-validator-arm64
+            ansible-roledep-validator-linux-amd64
+            ansible-roledep-validator-linux-arm64
           generate_release_notes: true
