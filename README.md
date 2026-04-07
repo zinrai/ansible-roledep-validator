@@ -2,14 +2,6 @@
 
 `ansible-roledep-validator` is a command-line tool that helps identify missing roles in your Ansible project. It analyzes playbooks, detects required roles (including dependencies defined in meta/main.yml files), and compares them with the roles available in your roles directory.
 
-## Installation
-
-Build the binary:
-
-```
-$ go build
-```
-
 ## Usage
 
 Basic usage with default roles directory:
