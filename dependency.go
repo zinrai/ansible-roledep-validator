@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml"
 )
 
 // Extract role dependencies from meta/main.yml
@@ -78,7 +78,7 @@ func (rp *RoleProcessor) extractRoleFromPlaybook(roleValue interface{}, rolesLis
 	case string:
 		*rolesList = append(*rolesList, role)
 		rp.Log("Found role (string): %s\n", role)
-	case map[interface{}]interface{}:
+	case map[string]interface{}:
 		if roleName, ok := role["role"].(string); ok {
 			*rolesList = append(*rolesList, roleName)
 			rp.Log("Found role (map): %s\n", roleName)
