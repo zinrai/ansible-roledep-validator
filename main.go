@@ -10,7 +10,13 @@ func main() {
 	playbookPath := flag.String("playbook", "", "Path to the Ansible playbook YAML file")
 	rolesPath := flag.String("roles", "roles", "Path to the Ansible roles directory (default: roles)")
 	verbose := flag.Bool("verbose", false, "Enable verbose output")
+	showVersion := flag.Bool("version", false, "Print version information and exit")
 	flag.Parse()
+
+	if *showVersion {
+		printVersion()
+		os.Exit(0)
+	}
 
 	// If no playbook is provided, check if a positional argument is given
 	args := flag.Args()
