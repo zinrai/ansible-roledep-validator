@@ -1,4 +1,4 @@
-# Ansible Role Dependency Validator
+# ansible-roledep-validator
 
 `ansible-roledep-validator` is a command-line tool that helps identify missing roles in your Ansible project. It analyzes playbooks, detects required roles (including dependencies defined in meta/main.yml files), and compares them with the roles available in your roles directory.
 
@@ -35,9 +35,9 @@ A role is a directory, or a symlink to one, directly under the roles directory. 
 
 ```yaml
 roles:
-  - nginx
-  - role: docker.io
-    tags: container
+  - role1
+  - role: role2
+    tags: tag1
 ```
 
 Any other entry is an error rather than being skipped: a mapping without a `role` key, a path, or a name containing `{{`. Skipping one would report that nothing is missing while a required role is absent.
@@ -46,13 +46,9 @@ Any other entry is an error rather than being skipped: a mapping without a `role
 
 Roles reached through `include_role` or `import_role` are not analyzed, because they are named inside tasks and only play-level `roles:` and `meta/main.yml` are read. A role required only that way is therefore not reported when it is missing.
 
-## How It Works
+`import_playbook` is not followed. Pass the imported playbook itself to check the roles it declares.
 
-1. Reads the specified playbook file to extract directly referenced roles
-2. Scans the roles directory to identify available roles (including symlinks)
-3. For each role, reads its meta/main.yml file to identify dependencies
-4. Recursively resolves all dependencies until the complete set of required roles is identified
-5. Compares the required roles with available roles to identify missing ones
+Only `meta/main.yml` is read for dependencies; `meta/main.yaml` is not.
 
 ## License
 
