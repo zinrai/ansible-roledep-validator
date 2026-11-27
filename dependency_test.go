@@ -82,8 +82,7 @@ func TestDependencyResolution(t *testing.T) {
 	// Run each test case
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			processor := NewRoleProcessor(false)
-			allDeps, err := processor.getAllDependencies(tc.initialRoles, rolesDir)
+			allDeps, err := getAllDependencies(tc.initialRoles, rolesDir)
 
 			if err != nil {
 				t.Fatalf("Failed to get dependencies: %v", err)
@@ -107,8 +106,7 @@ func TestDependencyResolution(t *testing.T) {
 	// Test that circular dependencies are handled properly and don't cause infinite loops
 	// Success of this test is proven by the test completing without hanging
 	t.Run("Circular dependency handling", func(t *testing.T) {
-		processor := NewRoleProcessor(false)
-		_, err := processor.getAllDependencies([]string{"roleA"}, rolesDir)
+		_, err := getAllDependencies([]string{"roleA"}, rolesDir)
 		if err != nil {
 			t.Fatalf("Failed to handle circular dependency: %v", err)
 		}
@@ -140,8 +138,7 @@ func TestUnreadableMetaIsAnError(t *testing.T) {
 		t.Fatalf("Failed to write meta file: %v", err)
 	}
 
-	processor := NewRoleProcessor(false)
-	allDeps, err := processor.getAllDependencies([]string{"roleA"}, rolesDir)
+	allDeps, err := getAllDependencies([]string{"roleA"}, rolesDir)
 	if err == nil {
 		t.Fatalf("Expected an error, got dependencies %v", allDeps)
 	}
@@ -154,8 +151,7 @@ func TestPlaybookRoleForms(t *testing.T) {
 		t.Fatalf("Failed to write playbook: %v", err)
 	}
 
-	processor := NewRoleProcessor(false)
-	roles, err := processor.getPlaybookRoles(playbook)
+	roles, err := getPlaybookRoles(playbook)
 	if err != nil {
 		t.Fatalf("Failed to get playbook roles: %v", err)
 	}
@@ -186,8 +182,7 @@ func TestUnresolvableRoleEntryIsAnError(t *testing.T) {
 				t.Fatalf("Failed to write playbook: %v", err)
 			}
 
-			processor := NewRoleProcessor(false)
-			roles, err := processor.getPlaybookRoles(playbook)
+			roles, err := getPlaybookRoles(playbook)
 			if err == nil {
 				t.Fatalf("Expected an error, got roles %v", roles)
 			}
@@ -204,8 +199,7 @@ func TestUnresolvableRoleEntryIsAnError(t *testing.T) {
 				t.Fatalf("Failed to write meta file: %v", err)
 			}
 
-			processor := NewRoleProcessor(false)
-			allDeps, err := processor.getAllDependencies([]string{"roleA"}, rolesDir)
+			allDeps, err := getAllDependencies([]string{"roleA"}, rolesDir)
 			if err == nil {
 				t.Fatalf("Expected an error, got dependencies %v", allDeps)
 			}

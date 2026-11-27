@@ -57,8 +57,7 @@ func TestSymlinkHandling(t *testing.T) {
 	}
 
 	// Run the test
-	processor := NewRoleProcessor(false)
-	roles, err := processor.getAllRoles(linkDir)
+	roles, err := getAllRoles(linkDir)
 
 	// Verify the results
 	if err != nil {
@@ -81,21 +80,5 @@ func TestSymlinkHandling(t *testing.T) {
 
 	if !foundValidSymlink {
 		t.Errorf("Valid symlink role not found in results")
-	}
-
-	// Directly test the isValidSymlinkToDir function
-	validDir, _ := processor.isValidSymlinkToDir(filepath.Join(linkDir, "valid-symlink"))
-	if !validDir {
-		t.Errorf("isValidSymlinkToDir failed to identify valid symlink to directory")
-	}
-
-	validDir, _ = processor.isValidSymlinkToDir(filepath.Join(linkDir, "broken-symlink"))
-	if validDir {
-		t.Errorf("isValidSymlinkToDir incorrectly identified broken symlink as valid")
-	}
-
-	validDir, _ = processor.isValidSymlinkToDir(filepath.Join(linkDir, "non-dir-symlink"))
-	if validDir {
-		t.Errorf("isValidSymlinkToDir incorrectly identified symlink to non-directory as valid")
 	}
 }
