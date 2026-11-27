@@ -8,12 +8,10 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
-// Represents the structure of a role's meta/main.yml file
 type MetaMain struct {
 	Dependencies []RoleRef `yaml:"dependencies"`
 }
 
-// Extract role dependencies from meta/main.yml
 func getDependencies(roleName string, rolesPath string) ([]string, error) {
 	metaFile := filepath.Join(rolesPath, roleName, "meta", "main.yml")
 	data, err := os.ReadFile(metaFile)
@@ -33,7 +31,6 @@ func getDependencies(roleName string, rolesPath string) ([]string, error) {
 	return roleNames(meta.Dependencies)
 }
 
-// Recursively get all dependencies for a set of roles
 func getAllDependencies(roles []string, rolesPath string) (map[string]bool, error) {
 	allDeps := make(map[string]bool)
 	toProcess := append([]string{}, roles...)

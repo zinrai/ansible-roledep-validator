@@ -8,8 +8,6 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
-// Accepts the two forms a role may be named in: a bare "rolename" and a
-// "{ role: rolename }" mapping. Every other form is an error.
 type RoleRef struct {
 	Name string
 }
@@ -31,12 +29,10 @@ func (r *RoleRef) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-// Represents a single play in an Ansible playbook
 type Play struct {
 	Roles []RoleRef `yaml:"roles"`
 }
 
-// Get roles from a playbook
 func getPlaybookRoles(playbookPath string) ([]string, error) {
 	data, err := os.ReadFile(playbookPath)
 	if err != nil {
@@ -61,7 +57,6 @@ func getPlaybookRoles(playbookPath string) ([]string, error) {
 	return roles, nil
 }
 
-// Extract the role names from a list of role references
 func roleNames(refs []RoleRef) ([]string, error) {
 	names := []string{}
 	for _, r := range refs {
@@ -73,8 +68,6 @@ func roleNames(refs []RoleRef) ([]string, error) {
 	return names, nil
 }
 
-// Reports whether name can only refer to a directory directly under the roles
-// directory. A path or a template resolves somewhere else.
 func isRoleDirName(name string) bool {
 	return name != "" && !strings.Contains(name, "/") && !strings.Contains(name, "{{")
 }
