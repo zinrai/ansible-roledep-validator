@@ -16,15 +16,9 @@ Specify a custom roles directory:
 $ ansible-roledep-validator -playbook playbook.yml -roles /path/to/roles
 ```
 
-Verbose output with additional details:
-
-```bash
-$ ansible-roledep-validator -playbook playbook.yml -verbose
-```
-
 ## Output
 
-By default, the tool produces minimal output, listing only the missing roles:
+Missing role names go to stdout, one per line, sorted. No output means every required role is present.
 
 ```
 role1
@@ -32,23 +26,28 @@ role2
 role3
 ```
 
-With the `-verbose` flag, the tool provides detailed information about the validation process:
+### Exit status
 
+- `0`: every required role is present
+- `1`: missing roles were printed to stdout
+- `2`: an error occurred
+
+## How roles are resolved
+
+A role is a directory, or a symlink to one, directly under the roles directory. Both a play's `roles:` and a role's `dependencies:` name it in one of two forms:
+
+```yaml
+roles:
+  - nginx
+  - role: docker.io
+    tags: container
 ```
-=== Ansible Role Dependency Validator ===
-Playbook: playbook.yml
-Roles directory: roles
 
-Current working directory: /path/to/project
+Any other entry is an error rather than being skipped: a mapping without a `role` key, a path, or a name containing `{{`. Skipping one would report that nothing is missing while a required role is absent.
 
-...detailed logging...
+## Limitations
 
-=== VALIDATION RESULTS ===
-Missing roles:
-- role1
-- role2
-- role3
-```
+Roles reached through `include_role` or `import_role` are not analyzed, because they are named inside tasks and only play-level `roles:` and `meta/main.yml` are read. A role required only that way is therefore not reported when it is missing.
 
 ## How It Works
 
