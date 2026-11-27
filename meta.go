@@ -8,6 +8,11 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
+// Represents the structure of a role's meta/main.yml file
+type MetaMain struct {
+	Dependencies []RoleRef `yaml:"dependencies"`
+}
+
 // Extract role dependencies from meta/main.yml
 func getDependencies(roleName string, rolesPath string) ([]string, error) {
 	metaFile := filepath.Join(rolesPath, roleName, "meta", "main.yml")
@@ -49,29 +54,4 @@ func getAllDependencies(roles []string, rolesPath string) (map[string]bool, erro
 	}
 
 	return allDeps, nil
-}
-
-// Get roles from a playbook
-func getPlaybookRoles(playbookPath string) ([]string, error) {
-	data, err := os.ReadFile(playbookPath)
-	if err != nil {
-		return nil, err
-	}
-
-	var plays []Play
-	err = yaml.Unmarshal(data, &plays)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing playbook YAML: %v", err)
-	}
-
-	var roles []string
-	for i, play := range plays {
-		names, err := roleNames(play.Roles)
-		if err != nil {
-			return nil, fmt.Errorf("play %d: %v", i+1, err)
-		}
-		roles = append(roles, names...)
-	}
-
-	return roles, nil
 }

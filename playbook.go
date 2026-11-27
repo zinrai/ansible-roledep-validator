@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strings"
+
+	"github.com/goccy/go-yaml"
 )
 
 // Accepts the two forms a role may be named in: a bare "rolename" and a
@@ -33,9 +36,29 @@ type Play struct {
 	Roles []RoleRef `yaml:"roles"`
 }
 
-// Represents the structure of a role's meta/main.yml file
-type MetaMain struct {
-	Dependencies []RoleRef `yaml:"dependencies"`
+// Get roles from a playbook
+func getPlaybookRoles(playbookPath string) ([]string, error) {
+	data, err := os.ReadFile(playbookPath)
+	if err != nil {
+		return nil, err
+	}
+
+	var plays []Play
+	err = yaml.Unmarshal(data, &plays)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing playbook YAML: %v", err)
+	}
+
+	var roles []string
+	for i, play := range plays {
+		names, err := roleNames(play.Roles)
+		if err != nil {
+			return nil, fmt.Errorf("play %d: %v", i+1, err)
+		}
+		roles = append(roles, names...)
+	}
+
+	return roles, nil
 }
 
 // Extract the role names from a list of role references
