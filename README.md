@@ -4,17 +4,14 @@
 
 ## Usage
 
-Basic usage with default roles directory:
-
-```bash
-$ ansible-roledep-validator playbook.yml
-```
-
-Specify a custom roles directory:
-
 ```bash
 $ ansible-roledep-validator -playbook playbook.yml -roles /path/to/roles
 ```
+
+### Flags
+
+- `-playbook`: Path to the Ansible playbook YAML file (required)
+- `-roles`: Path to the Ansible roles directory (default: `roles`)
 
 ## Output
 

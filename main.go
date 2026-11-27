@@ -13,7 +13,7 @@ const (
 
 func main() {
 	playbookPath := flag.String("playbook", "", "Path to the Ansible playbook YAML file")
-	rolesPath := flag.String("roles", "roles", "Path to the Ansible roles directory (default: roles)")
+	rolesPath := flag.String("roles", "roles", "Path to the Ansible roles directory")
 	showVersion := flag.Bool("version", false, "Print version information and exit")
 	flag.Parse()
 
@@ -22,15 +22,8 @@ func main() {
 		os.Exit(0)
 	}
 
-	// If no playbook is provided, check if a positional argument is given
-	args := flag.Args()
-	if *playbookPath == "" && len(args) > 0 {
-		*playbookPath = args[0]
-	}
-
-	if *playbookPath == "" {
-		fmt.Fprintln(os.Stderr, "Usage: ansible-roledep-validator [-playbook PLAYBOOK_PATH] [-roles ROLES_PATH]")
-		fmt.Fprintln(os.Stderr, "   or: ansible-roledep-validator PLAYBOOK_PATH")
+	if *playbookPath == "" || flag.NArg() > 0 {
+		flag.Usage()
 		os.Exit(exitFailure)
 	}
 
