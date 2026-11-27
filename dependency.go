@@ -26,9 +26,9 @@ func (rp *RoleProcessor) getDependencies(roleName string, rolesPath string) ([]s
 		return nil, err
 	}
 
-	deps := make([]string, len(meta.Dependencies))
-	for i, dep := range meta.Dependencies {
-		deps[i] = dep.Role
+	deps, err := roleNames(meta.Dependencies)
+	if err != nil {
+		return nil, err
 	}
 
 	if len(deps) > 0 {
@@ -69,22 +69,6 @@ func (rp *RoleProcessor) getAllDependencies(roles []string, rolesPath string) (m
 
 	rp.Log("All required roles (including dependencies): %v\n", getMapKeys(allDeps))
 	return allDeps, nil
-}
-
-// Extract a role from playbook data
-func (rp *RoleProcessor) extractRoleFromPlaybook(roleValue interface{}, rolesList *[]string) {
-	switch role := roleValue.(type) {
-	case string:
-		*rolesList = append(*rolesList, role)
-		rp.Log("Found role (string): %s\n", role)
-	case map[string]interface{}:
-		if roleName, ok := role["role"].(string); ok {
-			*rolesList = append(*rolesList, roleName)
-			rp.Log("Found role (map): %s\n", roleName)
-		}
-	default:
-		rp.Log("Warning: unknown role format: %T\n", roleValue)
-	}
 }
 
 // Get roles from a playbook
@@ -128,19 +112,11 @@ func (rp *RoleProcessor) getPlaybookRoles(playbookPath string) ([]string, error)
 	for i, play := range plays {
 		rp.Log("Processing play %d\n", i+1)
 
-		if play.Roles == nil {
-			continue
+		names, err := roleNames(play.Roles)
+		if err != nil {
+			return nil, fmt.Errorf("play %d: %v", i+1, err)
 		}
-
-		rolesArray, ok := play.Roles.([]interface{})
-		if !ok {
-			rp.Log("Warning: roles section has unexpected format in play %d\n", i+1)
-			continue
-		}
-
-		for _, item := range rolesArray {
-			rp.extractRoleFromPlaybook(item, &roles)
-		}
+		roles = append(roles, names...)
 	}
 
 	rp.Log("Extracted %d roles from playbook: %v\n", len(roles), roles)
