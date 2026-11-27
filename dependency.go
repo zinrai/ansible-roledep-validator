@@ -31,27 +31,21 @@ func getDependencies(roleName string, rolesPath string) ([]string, error) {
 // Recursively get all dependencies for a set of roles
 func getAllDependencies(roles []string, rolesPath string) (map[string]bool, error) {
 	allDeps := make(map[string]bool)
-	for _, role := range roles {
-		allDeps[role] = true
-	}
-
 	toProcess := append([]string{}, roles...)
 
 	for len(toProcess) > 0 {
 		role := toProcess[0]
 		toProcess = toProcess[1:]
+		if allDeps[role] {
+			continue
+		}
+		allDeps[role] = true
 
 		deps, err := getDependencies(role, rolesPath)
 		if err != nil {
 			return nil, fmt.Errorf("role %s: %v", role, err)
 		}
-
-		for _, dep := range deps {
-			if !allDeps[dep] {
-				allDeps[dep] = true
-				toProcess = append(toProcess, dep)
-			}
-		}
+		toProcess = append(toProcess, deps...)
 	}
 
 	return allDeps, nil
