@@ -55,8 +55,7 @@ func (rp *RoleProcessor) getAllDependencies(roles []string, rolesPath string) (m
 
 		deps, err := rp.getDependencies(role, rolesPath)
 		if err != nil {
-			rp.Log("Warning: error getting dependencies for role %s: %v\n", role, err)
-			continue
+			return nil, fmt.Errorf("role %s: %v", role, err)
 		}
 
 		for _, dep := range deps {

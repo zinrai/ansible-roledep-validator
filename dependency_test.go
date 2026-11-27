@@ -129,3 +129,20 @@ func writeMetaFile(t *testing.T, path string, dependencies []string) {
 		t.Fatalf("Failed to write meta fil: %v", err)
 	}
 }
+
+func TestUnreadableMetaIsAnError(t *testing.T) {
+	rolesDir := t.TempDir()
+	metaDir := filepath.Join(rolesDir, "roleA", "meta")
+	if err := os.MkdirAll(metaDir, 0755); err != nil {
+		t.Fatalf("Failed to create meta dir: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(metaDir, "main.yml"), []byte("dependencies: roleB\n"), 0644); err != nil {
+		t.Fatalf("Failed to write meta file: %v", err)
+	}
+
+	processor := NewRoleProcessor(false)
+	allDeps, err := processor.getAllDependencies([]string{"roleA"}, rolesDir)
+	if err == nil {
+		t.Fatalf("Expected an error, got dependencies %v", allDeps)
+	}
+}
