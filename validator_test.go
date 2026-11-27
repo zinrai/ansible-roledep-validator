@@ -7,14 +7,12 @@ import (
 )
 
 func TestSymlinkHandling(t *testing.T) {
-	// Create temporary directory structure for testing
 	testDir, err := os.MkdirTemp("", "roles-test")
 	if err != nil {
 		t.Fatalf("Failed to create temp directory: %v", err)
 	}
 	defer os.RemoveAll(testDir)
 
-	// Create base directory for actual roles
 	roleBaseDir := filepath.Join(testDir, "real-roles")
 	if err := os.Mkdir(roleBaseDir, 0755); err != nil {
 		t.Fatalf("Failed to create real roles dir: %v", err)
@@ -34,13 +32,11 @@ func TestSymlinkHandling(t *testing.T) {
 		f.Close()
 	}
 
-	// Create directory for symlinks
 	linkDir := filepath.Join(testDir, "roles")
 	if err := os.Mkdir(linkDir, 0755); err != nil {
 		t.Fatalf("Failed to create link dir: %v", err)
 	}
 
-	// Create three types of symlinks
 	// a. Valid symlink to a directory
 	if err := os.Symlink(validRoleDir, filepath.Join(linkDir, "valid-symlink")); err != nil {
 		t.Fatalf("Failed to create valid symlink: %v", err)
@@ -56,10 +52,8 @@ func TestSymlinkHandling(t *testing.T) {
 		t.Fatalf("Failed to create non-dir symlink: %v", err)
 	}
 
-	// Run the test
 	roles, err := getAllRoles(linkDir)
 
-	// Verify the results
 	if err != nil {
 		t.Fatalf("Failed to get roles: %v", err)
 	}
@@ -70,7 +64,6 @@ func TestSymlinkHandling(t *testing.T) {
 		t.Errorf("Expected %d roles, got %d", len(expectedRoles), len(roles))
 	}
 
-	// Check if specific roles are included
 	foundValidSymlink := false
 	for _, role := range roles {
 		if role == "valid-symlink" {
